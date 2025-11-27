@@ -6,7 +6,7 @@ def find_chunk_boundaries(
     file: BinaryIO,
     desired_num_chunks: int,
     split_special_token: bytes,
-) -> list[int]:
+):
     """
     Chunk the file into parts that can be counted independently.
     May return fewer chunks if the boundaries end up overlapping.
@@ -50,13 +50,19 @@ def find_chunk_boundaries(
 
 
 ## Usage
-with open(..., "rb") as f:
+tinystore_train = r"C:\Users\lee_li\PycharmProjects\assignment1-basics\data\TinyStoriesV2-GPT4-train.txt"
+with open(tinystore_train, "rb") as f:
     num_processes = 4
     boundaries = find_chunk_boundaries(f, num_processes, b"<|endoftext|>")
 
     # The following is a serial implementation, but you can parallelize this
     # by sending each start/end pair to a set of processes.
+    part = 0
     for start, end in zip(boundaries[:-1], boundaries[1:]):
         f.seek(start)
-        chunk = f.read(end - start).decode("utf-8", errors="ignore")
+        chunk = f.read(end - start)
+        tinystore_train_part = r"C:\Users\lee_li\PycharmProjects\assignment1-basics\data\TinyStoriesV2-GPT4-train_{}.txt".format(part)
+        fw = open(tinystore_train_part,'wb')
+        fw.write(chunk)
+        part += 1
         # Run pre-tokenization on your chunk and store the counts for each pre-token

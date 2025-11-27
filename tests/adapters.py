@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import os
 from typing import IO, Any, BinaryIO
 from collections.abc import Iterable
@@ -589,4 +590,19 @@ def run_train_bpe(
                 representing that <token1> was merged with <token2>.
                 Merges are ordered by order of creation.
     """
+    # find special_tokens
+    with open(input_path, "rb") as file:
+        temp_context = file.read()
+        special_tokens_idx_lst = []
+        for special_token in special_tokens:
+            start_idx = 0
+            special_token = special_token.encode(encoding='utf-8')
+            while True:
+                idx = temp_context.find(special_token, start_idx)
+                if idx == -1:
+                    break
+                special_tokens_idx_lst.append(idx)
+                start_idx = idx+1
+
+    # pre-tokenization with the regex
     raise NotImplementedError
